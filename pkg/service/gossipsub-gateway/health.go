@@ -2,6 +2,7 @@ package gossipsub_gateway
 
 import (
 	"net/http"
+	"sort"
 	"time"
 
 	"github.com/getoptimum/optimum-gateway/pkg/service/telemetry"
@@ -71,6 +72,7 @@ func (s *Service) BuildHealthResponse() (resp *HealthResponse, httpCode int) {
 			failing = append(failing, name)
 		}
 	}
+	sort.Strings(failing)
 
 	overall := healthStatusOK
 	httpCode = http.StatusOK

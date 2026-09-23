@@ -2,6 +2,7 @@ package gossipsub_gateway
 
 import (
 	"net/http"
+	"sort"
 	"testing"
 	"time"
 
@@ -42,6 +43,13 @@ func TestBuildHealthResponse(t *testing.T) {
 		// cl_health is evaluated either way here, so only the skip must not leak.
 		require.NotEqual(t, healthSkipped, resp.Checks["cl_health"].Status)
 		require.Equal(t, http.StatusServiceUnavailable, code)
+	})
+
+	t.Run("sorts failing checks", func(t *testing.T) {
+		resp, _ := newHealthTestService(t, false).BuildHealthResponse()
+
+		require.NotEmpty(t, resp.Failing)
+		require.True(t, sort.StringsAreSorted(resp.Failing), "failing checks should be stable")
 	})
 }
 
