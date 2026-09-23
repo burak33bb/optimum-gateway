@@ -48,8 +48,14 @@ func TestBuildHealthResponse(t *testing.T) {
 	t.Run("sorts failing checks", func(t *testing.T) {
 		resp, _ := newHealthTestService(t, false).BuildHealthResponse()
 
-		require.NotEmpty(t, resp.Failing)
-		require.True(t, sort.StringsAreSorted(resp.Failing), "failing checks should be stable")
+		expected := make([]string, 0)
+		for name, check := range resp.Checks {
+			if check.Status == healthFail {
+				expected = append(expected, name)
+			}
+		}
+		sort.Strings(expected)
+		require.Equal(t, expected, resp.Failing)
 	})
 }
 
